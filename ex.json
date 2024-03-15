@@ -1,0 +1,4 @@
+{
+    "name": "schedule_campaign",
+    "description": "Schedules the outbound sales campaign for the week. Takes no parameters"
+  }
