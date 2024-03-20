@@ -23,13 +23,12 @@ if st.session_state.get("started", False) == True:
             st.markdown(prompt)
 
         # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            messages=[
-                    {"role": m["role"], "content": m["content"]}
-                    for m in st.session_state.messages
-                ]
-            stream = generate_response(messages)
-            response = st.markdown(stream)
+        messages=[
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages
+            ]
+        response = generate_response(messages)
+        print(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.rerun()
 
