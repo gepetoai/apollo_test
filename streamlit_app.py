@@ -2,11 +2,22 @@ import streamlit as st
 from openai import OpenAI
 from llm import generate_response
 
-st.title("Steve")
+#SIDEBAR
+st.sidebar.title("Inputs")
+st.sidebar.write('modify these then press Start/Restart on the right')
+apollo_api_key = st.sidebar.text_input("Apollo API Key", value = st.session_state.get("apollo_api_key", ""))
+openai_api_key = st.sidebar.text_input("OpenAI API Key", value = st.session_state.get("openai_api_key", ""))
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Let's find you some leads. I need a company headcount range, locations, industry keywords, and a hard cap (default is 10)."}]
+
+#MAIN PAGE
+st.title("Steve")
+if st.button("Start/Restart"):
+    st.session_state.clear()
+    st.session_state.messages = [{"role": "assistant", "content": "Let's find you some leads. I need: \n-company headcount range\n-locations\n-industry keywords\n-hard cap (default 10)."}]
+    st.session_state.apollo_api_key = apollo_api_key
+    st.session_state.openai_api_key = openai_api_key
+    st.session_state.started = True
+    st.rerun()
 
 if st.session_state.get("started", False) == True:
     # Display chat messages from history on app rerun
@@ -32,22 +43,3 @@ if st.session_state.get("started", False) == True:
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.rerun()
 
-if st.sidebar.button("Start/Restart"):
-    #clear the entire session state
-    st.session_state.clear()
-    st.session_state['started'] = True
-    #rerun
-    st.rerun()
-
-if not st.session_state.get('apollo_api_key'):
-    st.session_state.apollo_api_key = ""
-
-if not st.session_state.get('openai_api_key'):
-    st.session_state.chunks = ""
-
-
-
-apollo_api_key = st.sidebar.text_input("Apollo API Key", value = st.session_state.apollo_api_key)
-
-
-openai_api_key = st.sidebar.text_input("OpenAI API Key", value = st.session_state.openai_api_key)
