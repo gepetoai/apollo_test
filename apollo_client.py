@@ -75,7 +75,8 @@ class Apollo:
         }
         return self.make_request(url, data)
 
-def collect_data(ap, ranges, locations, keywords, person_titles):
+
+def collect_data(ap, ranges, locations, keywords, cap, person_titles):
     org_page = 1
     results = []
 
@@ -109,7 +110,10 @@ def collect_data(ap, ranges, locations, keywords, person_titles):
                         if enrichment and enrichment.get('person') is not None:
                             results[-1]['person_email'] = enrichment['person']['email']
                             results[-1]['person_linkedin'] = enrichment['person'].get('linkedin_url', results[-1]['person_linkedin'])
-
+                    if len(results) >= cap:
+                        print('hit cap!')
+                        return results
+                    
                 if people_page >= people_response['pagination']['total_pages']:
                     break
                 people_page += 1
@@ -119,8 +123,3 @@ def collect_data(ap, ranges, locations, keywords, person_titles):
         org_page += 1
 
     return results
-
-ap = Apollo(key)
-check = ap.search_organizations(["500", "1000"], ["Canada"], ["Accounting Saas"])
-# check = collect_data(ap, ranges = ["500", "1000"], locations = ["Canada"], keywords = ["Accounting Saas"], person_titles = ["CEO"])
-print(check)

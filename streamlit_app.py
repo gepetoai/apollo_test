@@ -1,12 +1,12 @@
 import streamlit as st
 from openai import OpenAI
-from llm import full_response
+from llm import generate_response
 
 st.title("Steve")
 
 # Initialize chat history
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hey there! How can I help you level up your sales game today?"}]
+    st.session_state.messages = [{"role": "assistant", "content": "Let's find you some leads. I need a company headcount range, locations, industry keywords, and a hard cap (default is 10)."}]
 
 if st.session_state.get("started", False) == True:
     # Display chat messages from history on app rerun
@@ -15,7 +15,7 @@ if st.session_state.get("started", False) == True:
             st.markdown(message["content"])
 
     # Accept user input
-    if prompt := st.chat_input("How can I help?"):
+    if prompt := st.chat_input("Input here"):
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         # Display user message in chat message container
@@ -28,8 +28,8 @@ if st.session_state.get("started", False) == True:
                     {"role": m["role"], "content": m["content"]}
                     for m in st.session_state.messages
                 ]
-            stream = full_response(messages)
-            response = st.write_stream(stream)
+            stream = generate_response(messages)
+            response = st.markdown(stream)
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.rerun()
 
@@ -40,14 +40,15 @@ if st.sidebar.button("Start/Restart"):
     #rerun
     st.rerun()
 
-if not st.session_state.get('summary'):
-    st.session_state.summary = ""
-if not st.session_state.get('chunks'):
-    st.session_state.chunks = ""
+# if not st.session_state.get('Apollo API Key'):
+#     st.session_state.apollo_api_key = ""
+
+# if not st.session_state.get('chunks'):
+#     st.session_state.chunks = ""
 
 
 
-st.sidebar.text_area("Summary", value = st.session_state.summary)
+# st.sidebar.text_input("Apollo API Key", value = st.session_state.summary)
 
 
-st.sidebar.text_area("Chunks", value = st.session_state.chunks)
+# st.sidebar.text_input("Chunks", value = st.session_state.chunks)
