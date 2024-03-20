@@ -1,2 +1,2 @@
 # apollo_test
-python -M streamlit run streamlit_app.py
+python -m streamlit run streamlit_app.py

@@ -110,6 +110,11 @@ def collect_data(ap, ranges, locations, keywords, cap, person_titles):
                         if enrichment and enrichment.get('person') is not None:
                             results[-1]['person_email'] = enrichment['person']['email']
                             results[-1]['person_linkedin'] = enrichment['person'].get('linkedin_url', results[-1]['person_linkedin'])
+
+                    #remove the latest entry from results if there's no email address
+                    if not results[-1]['person_email'] or results[-1]['person_email'] == '':
+                        results.pop()
+
                     if len(results) >= cap:
                         print('hit cap!')
                         return results
