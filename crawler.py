@@ -103,7 +103,7 @@ def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = pr
 
     #generate response
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo-16k",
+        model="gpt-4-turbo-preview",
         messages=messages,
         temperature = 0,
         tools=tools,
@@ -130,7 +130,7 @@ def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = pr
     return messages[1:]
 
 
-messages=[{'role': 'user', 'content': 'use https://thespeakerlab.com/'}]
+messages=[{'role': 'user', 'content': 'use https://hellogepeto.com/'}]
 
 
 user_input = ""
