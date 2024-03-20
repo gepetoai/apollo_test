@@ -39,15 +39,15 @@ if st.sidebar.button("Start/Restart"):
     #rerun
     st.rerun()
 
-# if not st.session_state.get('Apollo API Key'):
-#     st.session_state.apollo_api_key = ""
+if not st.session_state.get('apollo_api_key'):
+    st.session_state.apollo_api_key = ""
 
-# if not st.session_state.get('chunks'):
-#     st.session_state.chunks = ""
-
-
-
-# st.sidebar.text_input("Apollo API Key", value = st.session_state.summary)
+if not st.session_state.get('openai_api_key'):
+    st.session_state.chunks = ""
 
 
-# st.sidebar.text_input("Chunks", value = st.session_state.chunks)
+
+apollo_api_key = st.sidebar.text_input("Apollo API Key", value = st.session_state.apollo_api_key)
+
+
+openai_api_key = st.sidebar.text_input("OpenAI API Key", value = st.session_state.openai_api_key)
