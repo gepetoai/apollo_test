@@ -14,6 +14,14 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse, urljoin
+
+import requests
+from bs4 import BeautifulSoup, Comment
+from urllib.parse import urlparse, urljoin
+
 def fetch_url_data(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -24,9 +32,18 @@ def fetch_url_data(url):
 
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Extract all text content
+        # Remove script, style, and other non-content tags
+        for script_or_style in soup(["script", "style", "header", "footer", "nav", "noscript"]):
+            script_or_style.decompose()
+
+        # Remove comment nodes
+        comments = soup.findAll(text=lambda text: isinstance(text, Comment))
+        for comment in comments:
+            comment.extract()
+
+        # Extract coherent and readable text content
         text_blocks = soup.stripped_strings
-        all_text = ' '.join(text_blocks)
+        all_text = ' '.join(filter(lambda x: len(x.split()) > 3, text_blocks))  # Filter out very short text fragments
 
         # Extract URLs
         parsed_url = urlparse(url)
@@ -40,7 +57,7 @@ def fetch_url_data(url):
             if parsed_href.netloc == parsed_url.netloc:
                 urls.add(joined_url)
 
-        # Extract form details
+        # Extract and enhance form details
         forms = []
         for form in soup.find_all('form'):
             form_details = {
@@ -53,19 +70,27 @@ def fetch_url_data(url):
                 input_details = {
                     'type': input_tag.get('type', 'text'),
                     'name': input_tag.get('name'),
-                    'value': input_tag.get('value', '')
+                    'value': input_tag.get('value', ''),
+                    'label': ''
                 }
+                # Attempt to find the input's label
+                if input_tag.get('id'):
+                    label = form.find('label', {'for': input_tag.get('id')})
+                    if label:
+                        input_details['label'] = label.get_text(strip=True)
                 form_details['inputs'].append(input_details)
 
             forms.append(form_details)
 
         return {
-            'text': all_text,
             'urls': list(urls),
-            'forms': forms
+            'form_details': forms,
+            'text': all_text  # Coherent and readable text content
         }
     except requests.RequestException as e:
         return {'error': str(e)}
+
+
 
 
 tools = [
@@ -73,13 +98,13 @@ tools = [
     "type": "function",
     "function": {
         "name": "fetch_url_data",
-        "description": "Fetches the HTML content and links of the same parent domain from a given URL.",
+        "description": "Taking a url as an input, it fetches the readable text, url links, and form details (if any) present in the url.",
         "parameters": {
             "type": "object",
             "properties": {
             "url": {
                 "type": "string",
-                "description": "A string representing the URL of the page to fetch."
+                "description": "A string representing the URL of the page to fetch information about."
                 }
             },
             "required": [
@@ -90,14 +115,20 @@ tools = [
   }
 ]
 
-prompt = '''
+prompt1 = '''
 Your job is to crawl a website until you find a a URL with an interest form of some kind, designed as a lead funnel for customers. 
-You can use the fetch_url_data function to get the HTML content and links from a given URL. 
+You can use the fetch_url_data function to get the readable text content and links from a given URL. 
 You can keep calling the function until you've found it, but only scan each webpage one.'''
+
+prompt2 = '''
+Your job is to crawl a website to understand what this business does and search for pricing information. 
+Our goal is to figure out, using basic assumptions if necessary, how much this business makes in revenue per customer per year.
+The fetch_url_data function can be used to get the HTML content from a given URL as well as embedded links for further exploration.
+You can keep calling the function until you've found it, but only scan each webpage once.'''
 
 
 #ChatCompletions API
-def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = prompt):
+def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = prompt2):
     messages = [{"role": "system", "content": prompt}]
     messages = messages + all_messages
 
@@ -130,7 +161,7 @@ def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = pr
     return messages[1:]
 
 
-messages=[{'role': 'user', 'content': 'use https://hellogepeto.com/'}]
+messages=[{'role': 'user', 'content': 'use https://www.hubspot.com/'}]
 
 
 user_input = ""
@@ -142,3 +173,7 @@ while user_input != "exit":
         user_input = input("You: ")
         messages.append({"role": "user", "content": user_input})
         print(f"{messages[-1]['role']}: {messages[-1]['content']}\n") 
+
+
+# test = fetch_url_data('https://www.hubspot.com/')
+# print(test)
