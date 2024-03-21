@@ -9,3 +9,9 @@ async def mailgun_webhook(request: Request):
     print(data)  # Just for demonstration, print the data.
 
     return {"message": "Received"}
+
+
+#add health check endpoint
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
