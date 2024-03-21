@@ -12,6 +12,7 @@ sb = SupabaseClient(os.environ.get('SB_URL'), os.environ.get('SB_KEY'))
 ap = Apollo(os.environ.get('APOLLO_KEY'))
 openai = openai.OpenAI(api_key = os.environ.get('OPENAI_KEY'), max_retries = 5)
 
+
 #used for function calling
 def find_leads(headcount_range: list, locations: list, keywords: list, cap: int):
     results = collect_data(ap, headcount_range, locations, keywords, cap, ["CEO", "Chief Executive Officer", "CMO", "CRO", "Chief Marketing Officer", "Chief Revenue Officer", "SVP Sales", "SVP Marketing", "VP Sales", "VP Marketing", "VP Growth", "Senior Vice President Sales", "Senior Vice President Marketing", "Vice President Sales", "Vice President Marketing", "Vice President Growth"])
@@ -136,13 +137,15 @@ If the user requests anything that's not possible, politely let them know you ca
 If the user asks anything out of scope from this prompt, let them know it's out of scope.
 '''
 
+
+sales_agent_prompt = "You are a sales agent for Gepeto, a company that creates AI sales agents. We can do inbound and outbound over email, SMS, voice, and chat widget. You are speaking to a lead via email. Your job is to tell them about Gepeto's services, ask them questions, and schedule a demo. You have 3 days to convert this lead. You are the world's best sales agent. Keep things short. Go!"
+
 #ChatCompletions API
 def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = prompt):
     messages = [{"role": "system", "content": prompt}]
     messages = messages + all_messages
 
     #generate response
-    print(all_messages)
     completion = openai.chat.completions.create(
         model="gpt-4-turbo-preview",
         messages=messages,
@@ -182,7 +185,4 @@ def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = pr
         return completion.choices[0].message.content
     
 
-# test_messages = [{"role": "assistant", "content": "Let's find some leads. I need a company headcount range, locations, industry keywords, and a hard cap (default is 10)."}]
-# test_messages.append({"role": "user", "content": "['100,10000'], ['United States', 'Canada'], ['Legal', 'Law'], 10"})
-# print(generate_response(test_messages))
-    
+

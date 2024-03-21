@@ -3,3 +3,4 @@ streamlit
 openai
 fastapi
 uvicorn
+python-multipart
