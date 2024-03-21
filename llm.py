@@ -182,6 +182,7 @@ def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = pr
         return completion.choices[0].message.content
     
 
-test_messages = [{"role": "assistant", "content": "Let's find some leads. I need a company headcount range, locations, industry keywords, and a hard cap (default is 10)."}]
-test_messages.append({"role": "user", "content": "['100,10000'], ['United States', 'Canada'], ['Legal', 'Law'], 10"})
-print(generate_response(test_messages))
+# test_messages = [{"role": "assistant", "content": "Let's find some leads. I need a company headcount range, locations, industry keywords, and a hard cap (default is 10)."}]
+# test_messages.append({"role": "user", "content": "['100,10000'], ['United States', 'Canada'], ['Legal', 'Law'], 10"})
+# print(generate_response(test_messages))
+    
