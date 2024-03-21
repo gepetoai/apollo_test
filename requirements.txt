@@ -1,3 +1,5 @@
 supabase
 streamlit
 openai
+fastapi
+uvicorn
