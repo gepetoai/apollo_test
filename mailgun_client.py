@@ -1,15 +1,38 @@
+from dotenv import load_dotenv
+load_dotenv()
+from typing import Optional
+import os
 import requests
 
-def send_simple_message():
-	return requests.post(
-		"https://api.mailgun.net/v3/sandbox2d283f7ff66e457c89e0ef095c932b6a.mailgun.org/messages",
-		auth=("api", "<PRIVATE_API_KEY>"),
-		data={"from": "Mailgun Sandbox <postmaster@sandbox2d283f7ff66e457c89e0ef095c932b6a.mailgun.org>",
-			"to": "Uzair Qarni <uzair@hellogepeto.com>",
-			"subject": "Hello Uzair Qarni",
-			"text": "Congratulations Uzair Qarni, you just sent an email with Mailgun! You are truly awesome!"})
+class MailGun():
+    url:Optional[str] =None
+    auth:Optional[str]=None 
+    route_url:Optional[str]=None
 
-# You can see a record of this email in your logs: https://app.mailgun.com/app/logs.
+    def __init__(self):
+        self.url: str = os.environ.get("MAILGUN_URL")
+        self.route_url: str = os.environ.get("MAILGUN_ROUTE_URL")
+        self.auth = ("api", os.environ.get("MAILGUN_SECRET"))
 
-# You can send up to 300 emails/day from this sandbox server.
-# Next, you should add your own domain so you can send 10000 emails/month for free.
+    # [TO], [CC], [SUBJECT], [EMAIL HEADING], [EMAIL CONTENT]
+    def send_email_message(self, to, cc,subject,heading = None, content = None):
+        response =  requests.post(
+            url = f'{self.url}/messages',
+            auth=self.auth,
+            data={"from": "Steve <steve@trygepeto.com>" ,
+                "to": to,
+                "cc":cc,
+                "subject": subject,
+                "html": "Hi there, I'm now trying this from the main domain"}
+		)
+        return response
+    
+#send tp uzair@hellogepeto.com 
+mg = MailGun()
+test = mg.send_email_message("uzair@hellogepeto.com", "", "Test Email")
+print(test)
+
+
+
+        
+
