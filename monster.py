@@ -1,9 +1,17 @@
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 
-#open monster_search.html and save it as html_content
-with open('apollo_test/monster_search.html', 'r') as file:
+
+with open('monster_search2.html', 'r') as file:
     html_content = file.read()
+
 
 def get_job_data(html_content):
     # Parse the HTML content
@@ -17,6 +25,8 @@ def get_job_data(html_content):
 
     # Extract job details from each job element
     for job_element in job_elements:
+        print(job_element)
+        continue
         # Extract job title and URL
         job_title_element = job_element.select_one('h3[aria-label] a')
         job_title = job_title_element.get_text(strip=True)
@@ -34,10 +44,10 @@ def get_job_data(html_content):
         # Extract job posting date
         job_date = job_element.select_one('span[data-testid="jobDetailDateRecency"]').get_text(strip=True)
         #example values of job_date are 'Today', '2 days', '9 days', '30+'
-        #reformat job_date into a timestamptz object using the current date. three cases are "Today', X days', '30+'
+        #reformat job_date into a timestamptz object using the current date. three cases are "Today', X days', '30+ days'
         if job_date == 'Today':
             job_date = pd.to_datetime('today').strftime('%Y-%m-%d')
-        elif 'days' in job_date:
+        elif 'days' in job_date and '+' not in job_date:
             days = int(job_date.split()[0])
             job_date = pd.to_datetime('today') - pd.DateOffset(days=days)
             job_date = job_date.strftime('%Y-%m-%d')
@@ -49,6 +59,11 @@ def get_job_data(html_content):
         job_data.append([job_title, company_name, job_location, job_date, job_url])
 
     # Create a pandas DataFrame from the job data
-    df = pd.DataFrame(job_data, columns=['Job Title', 'Company', 'Location', 'Date', 'URL'])
+    #df = pd.DataFrame(job_data, columns=['Job Title', 'Company', 'Location', 'Date', 'URL'])
 
-    return df
+    #return df
+
+# Get job data from the HTML content
+job_data = get_job_data(html_content)
+print(job_data)
+
