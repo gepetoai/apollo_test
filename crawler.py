@@ -85,7 +85,8 @@ def fetch_url_data(url):
         return {
             'urls': list(urls),
             'form_details': forms,
-            'text': all_text  # Coherent and readable text content
+            'text': all_text,  # Coherent and readable text content,
+            'html': str(soup)
         }
     except requests.RequestException as e:
         return {'error': str(e)}
@@ -126,9 +127,11 @@ Our goal is to figure out, using basic assumptions if necessary, how much this b
 The fetch_url_data function can be used to get the HTML content from a given URL as well as embedded links for further exploration.
 You can keep calling the function until you've found it, but only scan each webpage once.'''
 
+prompt3 = '''
+your job is to crawl the monster.com jobs website ive shared and list out all the sales development or account executive jobs listed on the page'''
 
 #ChatCompletions API
-def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = prompt2):
+def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = prompt3):
     messages = [{"role": "system", "content": prompt}]
     messages = messages + all_messages
 
@@ -161,7 +164,7 @@ def generate_response(all_messages, max_tokens = 250, tools = tools, prompt = pr
     return messages[1:]
 
 
-messages=[{'role': 'user', 'content': 'use https://www.hubspot.com/'}]
+messages=[{'role': 'user', 'content': 'use https://www.monster.com/jobs/search?q=sales+development+representative&where=&page=6&so=m.h.s'}]
 
 
 user_input = ""
