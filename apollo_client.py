@@ -43,7 +43,7 @@ class Apollo:
         print("Max retries exceeded or critical error occurred.")
         return None
 
-    def search_organizations(self, ranges, locations, keywords, page=1, per_page=100):
+    def search_organizations(self, ranges, locations, keywords, page=1, per_page=100, q_organization_name = None):
         url = f"{self.base_url}mixed_companies/search"
         data = {
             "api_key": self.key,
@@ -51,8 +51,9 @@ class Apollo:
             "per_page": per_page,
             "organization_num_employees_ranges": ranges,
             "organization_locations": locations,
-            "q_organization_keyword_tags": keywords
-        }
+            "q_organization_keyword_tags": keywords,
+            "q_organization_name": q_organization_name
+        },
         return self.make_request(url, data)
 
     def search_people(self, page, per_page, organization_ids, person_titles):
@@ -128,3 +129,4 @@ def collect_data(ap, ranges, locations, keywords, cap, person_titles):
         org_page += 1
 
     return results
+
